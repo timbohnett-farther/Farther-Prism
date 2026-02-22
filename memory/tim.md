@@ -29,3 +29,9 @@
 - GitHub webhook on OpenClaw-Ledger → push/PR/issue events
 - Cron: morning briefing (7am ET), health check (every 6h), GitHub activity (9am/2pm ET weekdays)
 - All cron jobs deliver summaries via WhatsApp
+
+## Email
+- OpenClaw's email: Ledger@The-AI-Team.io
+- Hosted on Hostinger (SMTP: smtp.hostinger.com:465, IMAP: imap.hostinger.com:993)
+- Credentials in env vars: EMAIL_ADDRESS, EMAIL_PASSWORD, SMTP_HOST, SMTP_PORT, IMAP_HOST, IMAP_PORT
+- Domain: The-AI-Team.io (Hostinger)
