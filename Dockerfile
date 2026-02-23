@@ -27,7 +27,10 @@ WORKDIR /app
 
 # Copy package files and install production dependencies
 COPY package*.json ./
-RUN npm ci --only=production
+RUN npm ci --omit=dev
+
+# Create uploads directory
+RUN mkdir -p /app/uploads
 
 # Copy built application
 COPY api/ ./api/

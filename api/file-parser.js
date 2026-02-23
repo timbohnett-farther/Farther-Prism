@@ -10,7 +10,6 @@
 import fs from 'fs';
 import csv from 'papaparse';
 import XLSX from 'xlsx';
-import pdfParse from 'pdf-parse';
 
 /**
  * Parse uploaded portfolio statement file
@@ -22,7 +21,7 @@ export async function parsePortfolioFile(filePath, fileType) {
     } else if (fileType === 'xlsx' || fileType === 'xls' || filePath.endsWith('.xlsx') || filePath.endsWith('.xls')) {
       return await parseExcel(filePath);
     } else if (fileType === 'pdf' || filePath.endsWith('.pdf')) {
-      return await parsePDF(filePath);
+      throw new Error('PDF parsing coming soon. Please convert to CSV or Excel for now.');
     } else {
       throw new Error('Unsupported file type. Please upload CSV, Excel, or PDF.');
     }
