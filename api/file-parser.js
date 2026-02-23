@@ -10,21 +10,61 @@
 import fs from 'fs';
 import csv from 'papaparse';
 import XLSX from 'xlsx';
+import { parseDocumentWithAI, enhanceWithAI } from './ai-document-parser.js';
 
 /**
  * Parse uploaded portfolio statement file
+ * Uses AI first, falls back to basic parsing
  */
-export async function parsePortfolioFile(filePath, fileType) {
+export async function parsePortfolioFile(filePath, fileType, useAI = true) {
   try {
+    // Try AI parsing first if API key is available
+    if (useAI && process.env.ANTHROPIC_API_KEY) {
+      try {
+        console.log('Attempting AI-powered parsing...');
+        const aiResult = await parseDocumentWithAI(filePath, fileType);
+        
+        if (aiResult.holdings && aiResult.holdings.length > 0) {
+          console.log(`✓ AI successfully extracted ${aiResult.holdings.length} holdings`);
+          return aiResult;
+        }
+      } catch (aiError) {
+        console.warn('AI parsing failed, falling back to basic parser:', aiError.message);
+        // Fall through to basic parsing
+      }
+    }
+    
+    // Fallback to basic parsing
+    console.log('Using basic file parser...');
+    let result;
+    
     if (fileType === 'csv' || filePath.endsWith('.csv')) {
-      return await parseCSV(filePath);
+      result = await parseCSV(filePath);
     } else if (fileType === 'xlsx' || fileType === 'xls' || filePath.endsWith('.xlsx') || filePath.endsWith('.xls')) {
-      return await parseExcel(filePath);
+      result = await parseExcel(filePath);
     } else if (fileType === 'pdf' || filePath.endsWith('.pdf')) {
-      throw new Error('PDF parsing coming soon. Please convert to CSV or Excel for now.');
+      // For PDF, ONLY use AI (basic parsing doesn't support PDF)
+      if (!process.env.ANTHROPIC_API_KEY) {
+        throw new Error('PDF parsing requires AI. Please set ANTHROPIC_API_KEY environment variable.');
+      }
+      return await parseDocumentWithAI(filePath, fileType);
     } else {
       throw new Error('Unsupported file type. Please upload CSV, Excel, or PDF.');
     }
+    
+    // Optionally enhance basic results with AI
+    if (useAI && process.env.ANTHROPIC_API_KEY && result.holdings && result.holdings.length > 0) {
+      try {
+        const enhanced = await enhanceWithAI(result.holdings);
+        result.holdings = enhanced;
+        result.enhanced = true;
+      } catch (enhanceError) {
+        console.warn('AI enhancement failed:', enhanceError.message);
+        // Continue with un-enhanced results
+      }
+    }
+    
+    return result;
   } catch (error) {
     console.error('File parsing error:', error);
     throw error;
