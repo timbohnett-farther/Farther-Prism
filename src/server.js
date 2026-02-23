@@ -15,6 +15,7 @@ import cors from 'cors';
 import { healthCheck } from './db/pool.js';
 import householdRoutes from './routes/households.js';
 import planRoutes from './routes/plans.js';
+import { runMonteCarlo } from '../projects/risk-engine/src/monte-carlo.js';
 
 const app = express();
 const PORT = process.env.API_PORT || process.env.PORT || 3000;
@@ -65,6 +66,58 @@ app.get('/api/v1/health', async (req, res) => {
     database: db,
     uptime: process.uptime(),
   });
+});
+
+// Monte Carlo simulation (temporary endpoint until full calc engine deployed)
+app.post('/api/monte-carlo', (req, res) => {
+  try {
+    const {
+      initialValue,
+      expectedReturn,
+      volatility,
+      years,
+      annualContribution = 0,
+      annualWithdrawal = 0,
+      numSimulations = 10000,
+      goalValue = 0,
+    } = req.body;
+
+    // Validate inputs
+    if (!initialValue || !expectedReturn || !volatility || !years) {
+      return res.status(400).json({
+        error: 'Missing required parameters: initialValue, expectedReturn, volatility, years',
+      });
+    }
+
+    // Run simulation
+    const results = runMonteCarlo({
+      initialValue,
+      expectedReturn,
+      volatility,
+      years,
+      annualContribution,
+      annualWithdrawal,
+      numSimulations,
+      goalValue,
+    });
+
+    res.json({
+      results,
+      parameters: {
+        initialValue,
+        expectedReturn,
+        volatility,
+        years,
+        annualContribution,
+        annualWithdrawal,
+        numSimulations,
+        goalValue,
+      },
+    });
+  } catch (error) {
+    console.error('Monte Carlo error:', error);
+    res.status(500).json({ error: error.message });
+  }
 });
 
 // API documentation
