@@ -54,16 +54,22 @@ const PlanningWizard = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-4">
+              <img 
+                src="/farther-logo.jpg" 
+                alt="Farther" 
+                className="h-8 w-auto opacity-80"
+              />
+              <div className="h-6 w-px bg-[#5b6a71]"></div>
               <button
                 onClick={() => navigate('/')}
                 className="text-[#6d9dbe] hover:text-white transition flex items-center"
               >
                 <span className="mr-2">←</span>
-                <span>Back to Dashboard</span>
+                <span>Dashboard</span>
               </button>
               <div className="h-6 w-px bg-[#5b6a71]"></div>
               <h1 className="text-xl font-bold text-white">
-                Financial Planning
+                Prism - Financial Planning
               </h1>
             </div>
             <div className="flex items-center space-x-2">

@@ -121,13 +121,20 @@ const Dashboard = () => {
       <header className="bg-[#333333] border-b border-[#5b6a71]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
           <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-3xl font-bold text-white">
-                Farther Financial Path
-              </h1>
-              <p className="mt-2 text-[#6d9dbe]">
-                Institutional-grade tools for modern wealth advisors
-              </p>
+            <div className="flex items-center space-x-4">
+              <img 
+                src="/farther-logo.jpg" 
+                alt="Farther" 
+                className="h-12 w-auto"
+              />
+              <div>
+                <h1 className="text-3xl font-bold text-white">
+                  Financial Path
+                </h1>
+                <p className="mt-1 text-[#6d9dbe]">
+                  Institutional-grade tools for modern wealth advisors
+                </p>
+              </div>
             </div>
             <div className="flex items-center space-x-4">
               <button className="px-4 py-2 bg-[#5b6a71] text-white rounded hover:bg-[#6d9dbe] transition">
@@ -278,8 +285,15 @@ const Dashboard = () => {
       <footer className="bg-[#333333] border-t border-[#5b6a71] mt-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className="flex items-center justify-between">
-            <div className="text-[#6d9dbe] text-sm">
-              © 2026 Farther, Inc. All rights reserved.
+            <div className="flex items-center space-x-3">
+              <img 
+                src="/farther-logo.jpg" 
+                alt="Farther" 
+                className="h-8 w-auto opacity-70"
+              />
+              <div className="text-[#6d9dbe] text-sm">
+                © 2026 Farther, Inc. All rights reserved.
+              </div>
             </div>
             <div className="flex space-x-6 text-sm">
               <a href="#" className="text-[#6d9dbe] hover:text-white transition">Documentation</a>
