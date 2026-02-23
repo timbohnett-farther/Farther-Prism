@@ -9,6 +9,7 @@ import cors from 'cors';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { runMonteCarlo } from '../projects/risk-engine/src/monte-carlo.js';
+import { generateComprehensivePlan } from '../projects/financial-planning/src/plan-generator.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -42,6 +43,7 @@ app.get('/', (req, res) => {
     endpoints: {
       health: 'GET /health',
       monteCarlo: 'POST /api/monte-carlo',
+      financialPlan: 'POST /api/financial-plan',
       docs: 'GET /api/docs',
     },
     repository: 'https://github.com/Ledger-AI-Team/Prism',
@@ -119,6 +121,36 @@ app.post('/api/monte-carlo', (req, res) => {
     });
   } catch (error) {
     console.error('Monte Carlo error:', error);
+    res.status(500).json({
+      error: 'Internal server error',
+      message: error.message,
+    });
+  }
+});
+
+// Comprehensive Financial Plan endpoint
+app.post('/api/financial-plan', async (req, res) => {
+  try {
+    const clientData = req.body;
+    
+    // Validate required fields
+    if (!clientData.personal || !clientData.personal.age) {
+      return res.status(400).json({
+        error: 'Missing required client data',
+        required: ['personal.age', 'personal.retirementAge', 'income', 'expenses'],
+      });
+    }
+    
+    // Generate comprehensive plan
+    const plan = await generateComprehensivePlan(clientData);
+    
+    res.json({
+      success: true,
+      plan,
+      generatedAt: new Date().toISOString(),
+    });
+  } catch (error) {
+    console.error('Financial planning error:', error);
     res.status(500).json({
       error: 'Internal server error',
       message: error.message,

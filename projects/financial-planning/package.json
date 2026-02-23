@@ -1,0 +1,21 @@
+{
+  "name": "farther-prism-financial-planning",
+  "version": "1.0.0",
+  "description": "Comprehensive financial planning engine - compete with eMoney & RightCapital",
+  "type": "module",
+  "main": "src/plan-generator.js",
+  "scripts": {
+    "test": "node --test tests/*.test.js"
+  },
+  "keywords": [
+    "financial-planning",
+    "retirement",
+    "tax-optimization",
+    "wealth-management",
+    "monte-carlo",
+    "cash-flow",
+    "goal-planning"
+  ],
+  "author": "Ledger @ Farther",
+  "license": "PROPRIETARY"
+}
