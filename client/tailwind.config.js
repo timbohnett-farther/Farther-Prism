@@ -7,22 +7,13 @@ export default {
   theme: {
     extend: {
       colors: {
-        // Farther Brand Colors
+        // Farther Official Brand Colors
         farther: {
-          navy: '#0A1628',      // Deep navy - primary brand
-          blue: '#1E3A5F',      // Medium blue
-          gold: '#D4A574',      // Premium gold accent
-          lightGold: '#E8D4B8', // Light gold
-          slate: '#F8FAFC',     // Background
-          gray: {
-            50: '#F9FAFB',
-            100: '#F3F4F6',
-            200: '#E5E7EB',
-            300: '#D1D5DB',
-            600: '#4B5563',
-            700: '#374151',
-            900: '#111827',
-          },
+          charcoal: '#333333',    // Primary background, text
+          white: '#ffffff',       // Text on dark, backgrounds  
+          slate: '#5b6a71',       // Secondary background, subtle borders
+          teal: '#1a7a82',        // PRIMARY accent, CTAs, links (use sparingly!)
+          lightBlue: '#6d9dbe',   // Secondary highlights, charts, data viz
         },
         // Semantic colors
         success: '#10B981',

@@ -132,14 +132,14 @@ export default function ReportGenerator({ data, onPrev }) {
       <div className="grid grid-cols-2 gap-4 mb-8">
         <button
           onClick={handleDownloadPDF}
-          className="flex items-center justify-center px-6 py-4 bg-farther-navy text-white font-semibold rounded-lg hover:bg-farther-blue transition-all shadow-md hover:shadow-xl"
+          className="flex items-center justify-center px-6 py-4 bg-farther-teal text-white font-semibold rounded-lg hover:bg-farther-teal/90 transition-all shadow-md hover:shadow-xl"
         >
           <Download className="w-5 h-5 mr-2" />
           Download PDF Report
         </button>
         <button
           onClick={handleEmailReport}
-          className="flex items-center justify-center px-6 py-4 bg-farther-gold text-farther-navy font-semibold rounded-lg hover:bg-farther-lightGold transition-all shadow-md hover:shadow-xl"
+          className="flex items-center justify-center px-6 py-4 bg-farther-lightBlue text-white font-semibold rounded-lg hover:bg-farther-lightBlue/90 transition-all shadow-md hover:shadow-xl"
         >
           <Mail className="w-5 h-5 mr-2" />
           Email to Client
@@ -163,13 +163,13 @@ export default function ReportGenerator({ data, onPrev }) {
       <div className="flex justify-between pt-6 border-t border-slate-200">
         <button
           onClick={onPrev}
-          className="px-8 py-3 border-2 border-farther-navy text-farther-navy font-semibold rounded-lg hover:bg-farther-gray-50 transition-all"
+          className="px-8 py-3 border-2 border-farther-slate text-farther-charcoal font-semibold rounded-lg hover:bg-gray-50 transition-all"
         >
           ← Back to Results
         </button>
         <button
           onClick={() => window.location.reload()}
-          className="px-8 py-3 bg-farther-gold text-farther-navy font-semibold rounded-lg hover:bg-farther-lightGold transition-all shadow-md hover:shadow-xl"
+          className="px-8 py-3 bg-farther-lightBlue text-white font-semibold rounded-lg hover:bg-farther-lightBlue/90 transition-all shadow-md hover:shadow-xl"
         >
           Start New Analysis
         </button>
