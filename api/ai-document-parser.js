@@ -47,9 +47,9 @@ export async function parseDocumentWithAI(filePath, fileType) {
     // Build Claude prompt
     const prompt = buildExtractionPrompt();
     
-    // Call Claude with vision
+    // Call Claude with vision (using latest model)
     const message = await anthropic.messages.create({
-      model: 'claude-3-5-sonnet-20241022',
+      model: 'claude-3-5-sonnet-20240620',
       max_tokens: 4096,
       messages: [
         {
@@ -65,7 +65,7 @@ export async function parseDocumentWithAI(filePath, fileType) {
               text: prompt,
             },
             {
-              type: 'document',
+              type: 'image',
               source: {
                 type: 'base64',
                 media_type: mediaType,
@@ -197,7 +197,7 @@ Tasks:
 Return the corrected JSON array.`;
 
     const message = await anthropic.messages.create({
-      model: 'claude-3-5-sonnet-20241022',
+      model: 'claude-3-5-sonnet-20240620',
       max_tokens: 2048,
       messages: [
         {
