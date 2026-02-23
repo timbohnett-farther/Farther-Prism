@@ -46,8 +46,8 @@ export default function ClientOnboarding({ data, onUpdate, onNext, isFirst }) {
   return (
     <div>
       <div className="mb-8">
-        <h2 className="text-3xl font-bold text-slate-900 mb-2">Client Information</h2>
-        <p className="text-slate-600">Let's start by gathering some basic information about your client.</p>
+        <h2 className="text-3xl font-bold text-farther-navy mb-2">Client Information</h2>
+        <p className="text-farther-gray-600">Let's start by gathering some basic information about your client.</p>
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-6">

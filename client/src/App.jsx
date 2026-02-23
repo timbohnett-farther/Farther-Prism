@@ -27,20 +27,23 @@ function App() {
   const CurrentStepComponent = steps[currentStep - 1].component;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50">
+    <div className="min-h-screen bg-gradient-to-br from-farther-slate to-farther-gray-50">
       {/* Header */}
-      <div className="bg-white border-b border-slate-200 shadow-sm">
-        <div className="max-w-7xl mx-auto px-6 py-4">
+      <div className="bg-farther-navy border-b border-farther-gold/20 shadow-lg">
+        <div className="max-w-7xl mx-auto px-6 py-6">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-2xl font-bold text-slate-900">Farther Prism</h1>
-              <p className="text-sm text-slate-600">AI-Powered Risk Assessment & Planning</p>
+              <h1 className="text-3xl font-bold text-white flex items-center gap-3">
+                <span className="text-farther-gold">◆</span>
+                Farther Prism
+              </h1>
+              <p className="text-sm text-farther-gold/80 mt-1">Intelligent Risk Assessment & Wealth Planning</p>
             </div>
             <div className="text-right">
-              <div className="text-sm font-medium text-slate-700">
+              <div className="text-sm font-semibold text-farther-gold">
                 Step {currentStep} of {steps.length}
               </div>
-              <div className="text-xs text-slate-500">{steps[currentStep - 1].name}</div>
+              <div className="text-xs text-white/70">{steps[currentStep - 1].name}</div>
             </div>
           </div>
         </div>
@@ -54,12 +57,12 @@ function App() {
               <div className="flex flex-col items-center flex-1">
                 <div className="flex items-center w-full">
                   <div
-                    className={`flex items-center justify-center w-10 h-10 rounded-full border-2 transition-all ${
+                    className={`flex items-center justify-center w-12 h-12 rounded-full border-2 transition-all shadow-md ${
                       currentStep > step.id
-                        ? 'bg-green-500 border-green-500 text-white'
+                        ? 'bg-farther-gold border-farther-gold text-farther-navy'
                         : currentStep === step.id
-                        ? 'bg-blue-500 border-blue-500 text-white'
-                        : 'bg-white border-slate-300 text-slate-400'
+                        ? 'bg-farther-blue border-farther-gold text-white ring-4 ring-farther-gold/20'
+                        : 'bg-white border-farther-gray-300 text-farther-gray-600'
                     }`}
                   >
                     {currentStep > step.id ? (
@@ -70,15 +73,15 @@ function App() {
                   </div>
                   {index < steps.length - 1 && (
                     <div
-                      className={`flex-1 h-0.5 mx-2 transition-all ${
-                        currentStep > step.id ? 'bg-green-500' : 'bg-slate-300'
+                      className={`flex-1 h-1 mx-3 transition-all rounded ${
+                        currentStep > step.id ? 'bg-farther-gold' : 'bg-farther-gray-200'
                       }`}
                     />
                   )}
                 </div>
                 <div
-                  className={`mt-2 text-sm font-medium ${
-                    currentStep >= step.id ? 'text-slate-900' : 'text-slate-400'
+                  className={`mt-3 text-sm font-semibold ${
+                    currentStep >= step.id ? 'text-farther-navy' : 'text-farther-gray-600'
                   }`}
                 >
                   {step.name}
@@ -89,7 +92,7 @@ function App() {
         </div>
 
         {/* Current Step Content */}
-        <div className="bg-white rounded-lg shadow-lg p-8">
+        <div className="bg-white rounded-xl shadow-2xl border border-farther-gray-200 p-8">
           <CurrentStepComponent
             data={{
               clientData,

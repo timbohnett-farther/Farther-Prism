@@ -132,14 +132,14 @@ export default function ReportGenerator({ data, onPrev }) {
       <div className="grid grid-cols-2 gap-4 mb-8">
         <button
           onClick={handleDownloadPDF}
-          className="flex items-center justify-center px-6 py-4 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+          className="flex items-center justify-center px-6 py-4 bg-farther-navy text-white font-semibold rounded-lg hover:bg-farther-blue transition-all shadow-md hover:shadow-xl"
         >
           <Download className="w-5 h-5 mr-2" />
           Download PDF Report
         </button>
         <button
           onClick={handleEmailReport}
-          className="flex items-center justify-center px-6 py-4 bg-slate-600 text-white rounded-lg hover:bg-slate-700 transition-colors"
+          className="flex items-center justify-center px-6 py-4 bg-farther-gold text-farther-navy font-semibold rounded-lg hover:bg-farther-lightGold transition-all shadow-md hover:shadow-xl"
         >
           <Mail className="w-5 h-5 mr-2" />
           Email to Client
@@ -163,13 +163,13 @@ export default function ReportGenerator({ data, onPrev }) {
       <div className="flex justify-between pt-6 border-t border-slate-200">
         <button
           onClick={onPrev}
-          className="px-8 py-3 border border-slate-300 text-slate-700 font-medium rounded-lg hover:bg-slate-50 transition-colors"
+          className="px-8 py-3 border-2 border-farther-navy text-farther-navy font-semibold rounded-lg hover:bg-farther-gray-50 transition-all"
         >
-          Back to Results
+          ← Back to Results
         </button>
         <button
           onClick={() => window.location.reload()}
-          className="px-8 py-3 bg-green-600 text-white font-medium rounded-lg hover:bg-green-700 transition-colors"
+          className="px-8 py-3 bg-farther-gold text-farther-navy font-semibold rounded-lg hover:bg-farther-lightGold transition-all shadow-md hover:shadow-xl"
         >
           Start New Analysis
         </button>

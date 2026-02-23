@@ -224,15 +224,15 @@ export default function MonteCarloResults({ data, onUpdate, onNext, onPrev }) {
       <div className="flex justify-between pt-6 border-t border-slate-200">
         <button
           onClick={onPrev}
-          className="px-8 py-3 border border-slate-300 text-slate-700 font-medium rounded-lg hover:bg-slate-50 transition-colors"
+          className="px-8 py-3 border-2 border-farther-navy text-farther-navy font-semibold rounded-lg hover:bg-farther-gray-50 transition-all"
         >
-          Back
+          ← Back
         </button>
         <button
           onClick={onNext}
-          className="px-8 py-3 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors"
+          className="px-8 py-3 bg-farther-navy text-white font-semibold rounded-lg hover:bg-farther-blue transition-all shadow-md hover:shadow-xl focus:ring-2 focus:ring-farther-gold"
         >
-          Generate Report
+          Generate Report →
         </button>
       </div>
     </div>
