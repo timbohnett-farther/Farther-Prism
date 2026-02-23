@@ -1,5 +1,6 @@
-import { useState } from 'react';
-import { Upload, Plus, Trash2, FileText, Edit3 } from 'lucide-react';
+import { useState, useRef } from 'react';
+import { Upload, Plus, Trash2, FileText, Edit3, Loader2, CheckCircle, AlertCircle } from 'lucide-react';
+import axios from 'axios';
 
 export default function PortfolioBuilder({ data, onUpdate, onNext, onPrev }) {
   const [mode, setMode] = useState('upload'); // 'upload' or 'manual'
@@ -10,44 +11,90 @@ export default function PortfolioBuilder({ data, onUpdate, onNext, onPrev }) {
     shares: '',
     price: '',
   });
-  const [csvData, setCsvData] = useState(null);
+  const [uploading, setUploading] = useState(false);
+  const [uploadStatus, setUploadStatus] = useState(null); // 'success', 'error', null
+  const [uploadMessage, setUploadMessage] = useState('');
+  const [dragActive, setDragActive] = useState(false);
+  const fileInputRef = useRef(null);
 
-  const handleFileUpload = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = (event) => {
-        const text = event.target.result;
-        parseCSV(text);
-      };
-      reader.readAsText(file);
+  const handleFileUpload = async (file) => {
+    if (!file) return;
+    
+    // Validate file type
+    const allowedTypes = ['.csv', '.xlsx', '.xls', '.pdf'];
+    const fileName = file.name.toLowerCase();
+    const isAllowed = allowedTypes.some(type => fileName.endsWith(type));
+    
+    if (!isAllowed) {
+      setUploadStatus('error');
+      setUploadMessage('Invalid file type. Please upload CSV, Excel, or PDF.');
+      return;
+    }
+    
+    setUploading(true);
+    setUploadStatus(null);
+    setUploadMessage('');
+    
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+      
+      const response = await axios.post('/api/upload-statement', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+      
+      if (response.data.success && response.data.holdings) {
+        setHoldings(response.data.holdings);
+        setUploadStatus('success');
+        setUploadMessage(`Successfully imported ${response.data.holdings.length} holdings from ${response.data.originalFilename}`);
+      } else {
+        setUploadStatus('error');
+        setUploadMessage('No holdings found in file');
+      }
+    } catch (error) {
+      console.error('Upload error:', error);
+      setUploadStatus('error');
+      setUploadMessage(error.response?.data?.message || 'Failed to parse file. Please check the format.');
+    } finally {
+      setUploading(false);
     }
   };
-
-  const parseCSV = (text) => {
-    const lines = text.split('\n');
-    const headers = lines[0].toLowerCase().split(',');
-    const parsed = [];
-
-    for (let i = 1; i < lines.length; i++) {
-      if (!lines[i].trim()) continue;
-      
-      const values = lines[i].split(',');
-      const holding = {
-        ticker: values[headers.indexOf('ticker')] || values[headers.indexOf('symbol')] || '',
-        name: values[headers.indexOf('name')] || values[headers.indexOf('description')] || '',
-        shares: parseFloat(values[headers.indexOf('shares')] || values[headers.indexOf('quantity')] || 0),
-        price: parseFloat(values[headers.indexOf('price')] || values[headers.indexOf('current price')] || 0),
-      };
-      
-      if (holding.ticker) {
-        holding.value = holding.shares * holding.price;
-        parsed.push(holding);
-      }
+  
+  const handleFileInputChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      handleFileUpload(file);
     }
-
-    setHoldings(parsed);
-    setCsvData(text);
+  };
+  
+  const handleDragEnter = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setDragActive(true);
+  };
+  
+  const handleDragLeave = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setDragActive(false);
+  };
+  
+  const handleDragOver = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+  };
+  
+  const handleDrop = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setDragActive(false);
+    
+    const file = e.dataTransfer.files[0];
+    if (file) {
+      handleFileUpload(file);
+    }
   };
 
   const addHolding = () => {
@@ -109,24 +156,98 @@ export default function PortfolioBuilder({ data, onUpdate, onNext, onPrev }) {
       {/* Upload Mode */}
       {mode === 'upload' && (
         <div className="mb-8">
-          <div className="border-2 border-dashed border-slate-300 rounded-lg p-12 text-center hover:border-blue-400 transition-colors">
+          <div
+            className={`border-2 border-dashed rounded-lg p-12 text-center transition-all ${
+              dragActive
+                ? 'border-farther-teal bg-farther-teal/5'
+                : 'border-slate-300 hover:border-farther-teal'
+            }`}
+            onDragEnter={handleDragEnter}
+            onDragOver={handleDragOver}
+            onDragLeave={handleDragLeave}
+            onDrop={handleDrop}
+          >
             <input
+              ref={fileInputRef}
               type="file"
-              accept=".csv"
-              onChange={handleFileUpload}
+              accept=".csv,.xlsx,.xls,.pdf"
+              onChange={handleFileInputChange}
               className="hidden"
-              id="csv-upload"
+              id="file-upload"
             />
-            <label htmlFor="csv-upload" className="cursor-pointer">
-              <FileText className="w-16 h-16 mx-auto text-slate-400 mb-4" />
-              <p className="text-lg font-medium text-slate-700 mb-2">
-                Drop CSV file here or click to browse
-              </p>
-              <p className="text-sm text-slate-500">
-                Expected columns: Ticker, Name, Shares, Price
-              </p>
-            </label>
+            
+            {uploading ? (
+              <div className="py-8">
+                <Loader2 className="w-16 h-16 mx-auto text-farther-teal mb-4 animate-spin" />
+                <p className="text-lg font-medium text-slate-700">
+                  Processing your file...
+                </p>
+                <p className="text-sm text-slate-500 mt-2">
+                  Extracting portfolio holdings
+                </p>
+              </div>
+            ) : uploadStatus === 'success' ? (
+              <div className="py-8">
+                <CheckCircle className="w-16 h-16 mx-auto text-green-600 mb-4" />
+                <p className="text-lg font-semibold text-green-700 mb-2">
+                  {uploadMessage}
+                </p>
+                <button
+                  onClick={() => {
+                    setUploadStatus(null);
+                    fileInputRef.current.value = '';
+                  }}
+                  className="mt-4 px-6 py-2 text-farther-teal hover:underline"
+                >
+                  Upload another file
+                </button>
+              </div>
+            ) : uploadStatus === 'error' ? (
+              <div className="py-8">
+                <AlertCircle className="w-16 h-16 mx-auto text-red-600 mb-4" />
+                <p className="text-lg font-semibold text-red-700 mb-2">
+                  Upload failed
+                </p>
+                <p className="text-sm text-red-600 mb-4">
+                  {uploadMessage}
+                </p>
+                <button
+                  onClick={() => {
+                    setUploadStatus(null);
+                    fileInputRef.current.value = '';
+                  }}
+                  className="px-6 py-2 bg-farther-teal text-white rounded-lg hover:bg-farther-teal/90"
+                >
+                  Try again
+                </button>
+              </div>
+            ) : (
+              <label htmlFor="file-upload" className="cursor-pointer">
+                <FileText className="w-16 h-16 mx-auto text-slate-400 mb-4" />
+                <p className="text-lg font-medium text-slate-700 mb-2">
+                  Drag & drop your portfolio statement here
+                </p>
+                <p className="text-sm text-slate-500 mb-1">
+                  or click to browse
+                </p>
+                <p className="text-xs text-slate-400 mt-4">
+                  Supports: CSV, Excel (.xlsx, .xls), PDF
+                </p>
+                <p className="text-xs text-slate-400">
+                  Max file size: 10MB
+                </p>
+              </label>
+            )}
           </div>
+          
+          {holdings.length > 0 && uploadStatus === 'success' && (
+            <div className="mt-4 p-4 bg-green-50 border border-green-200 rounded-lg">
+              <p className="text-sm text-green-800">
+                <CheckCircle className="inline w-4 h-4 mr-2" />
+                Portfolio loaded successfully! Review holdings below and continue when ready.
+              </p>
+            </div>
+          )}
         </div>
       )}
 

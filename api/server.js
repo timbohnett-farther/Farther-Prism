@@ -8,8 +8,11 @@ import express from 'express';
 import cors from 'cors';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import multer from 'multer';
+import fs from 'fs';
 import { runMonteCarlo } from '../projects/risk-engine/src/monte-carlo.js';
 import { generateComprehensivePlan } from '../projects/financial-planning/src/plan-generator.js';
+import { parsePortfolioFile } from './file-parser.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -20,6 +23,28 @@ const PORT = process.env.PORT || 3000;
 // Middleware
 app.use(cors());
 app.use(express.json());
+
+// Configure file upload
+const upload = multer({
+  dest: 'uploads/',
+  limits: {
+    fileSize: 10 * 1024 * 1024, // 10MB limit
+  },
+  fileFilter: (req, file, cb) => {
+    const allowedTypes = ['.csv', '.xlsx', '.xls', '.pdf'];
+    const ext = path.extname(file.originalname).toLowerCase();
+    if (allowedTypes.includes(ext)) {
+      cb(null, true);
+    } else {
+      cb(new Error('Invalid file type. Please upload CSV, Excel, or PDF.'));
+    }
+  },
+});
+
+// Create uploads directory if it doesn't exist
+if (!fs.existsSync('uploads')) {
+  fs.mkdirSync('uploads');
+}
 
 // Serve static files from React build
 app.use(express.static(path.join(__dirname, '../client/dist')));
@@ -43,6 +68,7 @@ app.get('/', (req, res) => {
     endpoints: {
       health: 'GET /health',
       monteCarlo: 'POST /api/monte-carlo',
+      uploadStatement: 'POST /api/upload-statement',
       financialPlan: 'POST /api/financial-plan',
       docs: 'GET /api/docs',
     },
@@ -123,6 +149,43 @@ app.post('/api/monte-carlo', (req, res) => {
     console.error('Monte Carlo error:', error);
     res.status(500).json({
       error: 'Internal server error',
+      message: error.message,
+    });
+  }
+});
+
+// Portfolio Statement Upload endpoint
+app.post('/api/upload-statement', upload.single('file'), async (req, res) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({
+        error: 'No file uploaded',
+      });
+    }
+    
+    const filePath = req.file.path;
+    const fileType = path.extname(req.file.originalname).toLowerCase().substring(1);
+    
+    // Parse the file
+    const result = await parsePortfolioFile(filePath, fileType);
+    
+    // Clean up uploaded file
+    fs.unlinkSync(filePath);
+    
+    res.json({
+      success: true,
+      ...result,
+      originalFilename: req.file.originalname,
+    });
+  } catch (error) {
+    // Clean up file on error
+    if (req.file && fs.existsSync(req.file.path)) {
+      fs.unlinkSync(req.file.path);
+    }
+    
+    console.error('File upload error:', error);
+    res.status(500).json({
+      error: 'File parsing failed',
       message: error.message,
     });
   }
