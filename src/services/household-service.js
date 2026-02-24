@@ -22,12 +22,13 @@ export const households = {
   /**
    * Create a new household.
    */
-  async create({ name, primaryAdvisorId, serviceTier, tags, notes }) {
+  async create({ name, householdName, primaryAdvisorId, serviceTier, tags, notes }) {
+    const finalName = householdName || name; // Support both old and new param names
     const result = await query(
-      `INSERT INTO households (name, primary_advisor_id, service_tier, tags, notes)
-       VALUES ($1, $2, $3, $4, $5)
+      `INSERT INTO households (household_name, primary_advisor_id, metadata)
+       VALUES ($1, $2, $3)
        RETURNING *`,
-      [name, primaryAdvisorId, serviceTier, tags, notes]
+      [finalName, primaryAdvisorId, { serviceTier, tags, notes }]
     );
     return result.rows[0];
   },
@@ -68,7 +69,7 @@ export const households = {
     }
 
     if (search) {
-      sql += ` AND h.name ILIKE $${paramIdx++}`;
+      sql += ` AND h.household_name ILIKE $${paramIdx++}`;
       params.push(`%${search}%`);
     }
 
