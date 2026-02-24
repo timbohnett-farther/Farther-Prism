@@ -110,8 +110,12 @@ const Dashboard = () => {
   ];
 
   const handleToolClick = (tool) => {
+    console.log('[Dashboard] Tool clicked:', tool.name, tool.route, tool.status);
     if (tool.status === 'active') {
+      console.log('[Dashboard] Navigating to:', tool.route);
       navigate(tool.route);
+    } else {
+      console.log('[Dashboard] Tool not active, ignoring click');
     }
   };
 

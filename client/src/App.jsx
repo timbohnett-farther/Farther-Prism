@@ -35,6 +35,8 @@ const ComingSoon = ({ toolName }) => (
 );
 
 function App() {
+  console.log('[App] Initializing router');
+  
   return (
     <Router>
       <Routes>
