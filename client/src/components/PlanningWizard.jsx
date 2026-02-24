@@ -55,7 +55,7 @@ const PlanningWizard = () => {
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-4">
               <img 
-                src="/farther-wordmark.jpg" 
+                src="/farther-wordmark.png" 
                 alt="Farther" 
                 className="h-8 w-auto"
               />

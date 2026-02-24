@@ -127,7 +127,7 @@ const Dashboard = () => {
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-4">
               <img 
-                src="/farther-wordmark.jpg" 
+                src="/farther-wordmark.png" 
                 alt="Farther" 
                 className="h-10 w-auto"
               />
@@ -292,7 +292,7 @@ const Dashboard = () => {
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-3">
               <img 
-                src="/farther-symbol.jpg" 
+                src="/farther-symbol.png" 
                 alt="Farther" 
                 className="h-6 w-auto opacity-60"
               />
