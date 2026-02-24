@@ -356,10 +356,10 @@ export const accounts = {
   async getById(id) {
     const result = await query(
       `SELECT a.*,
-        COALESCE(SUM(p.market_value), 0) AS total_value,
-        COUNT(DISTINCT p.security_id) AS position_count
+        COALESCE(SUM(l.market_value), 0) AS total_value,
+        COUNT(DISTINCT l.symbol) AS position_count
        FROM accounts a
-       LEFT JOIN positions p ON a.id = p.account_id
+       LEFT JOIN lots l ON a.id = l.account_id
        WHERE a.id = $1
        GROUP BY a.id`,
       [id]
@@ -370,10 +370,10 @@ export const accounts = {
   async listByHousehold(householdId, { status = 'active' } = {}) {
     const result = await query(
       `SELECT a.*,
-        COALESCE(SUM(p.market_value), 0) AS total_value,
-        COUNT(DISTINCT p.security_id) AS position_count
+        COALESCE(SUM(l.market_value), 0) AS total_value,
+        COUNT(DISTINCT l.symbol) AS position_count
        FROM accounts a
-       LEFT JOIN positions p ON a.id = p.account_id
+       LEFT JOIN lots l ON a.id = l.account_id
        WHERE a.household_id = $1 AND a.status = $2
        GROUP BY a.id
        ORDER BY a.account_name`,

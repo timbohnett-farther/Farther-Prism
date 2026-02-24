@@ -1,0 +1,6 @@
+Account Number,Account Type,Symbol,Description,Quantity,Price,Market Value,Cost Basis,Acquisition Date,As of Date
+1234-5678,Individual Brokerage,SPY,SPDR S&P 500 ETF,100,450.00,45000.00,40000.00,2022-01-15,2026-02-24
+1234-5678,Individual Brokerage,VTI,Vanguard Total Stock Market ETF,50,250.00,12500.00,11000.00,2022-06-20,2026-02-24
+1234-5678,Individual Brokerage,AGG,iShares Core U.S. Aggregate Bond ETF,200,100.00,20000.00,21000.00,2021-12-10,2026-02-24
+9999-1111,Traditional IRA,VTSAX,Vanguard Total Stock Market Index,500,125.00,62500.00,55000.00,2020-04-01,2026-02-24
+9999-1111,Traditional IRA,VBTLX,Vanguard Total Bond Market Index,300,95.00,28500.00,29000.00,2020-04-01,2026-02-24
