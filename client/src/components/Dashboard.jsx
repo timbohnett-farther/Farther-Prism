@@ -114,10 +114,10 @@ const Dashboard = () => {
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         {/* Section Header */}
         <div className="mb-12 text-center">
-          <h2 className="text-3xl font-bold text-white mb-4">
+          <h2 className="text-3xl font-bold text-[#FCFDFC] mb-4">
             Intelligent Wealth Platforms
           </h2>
-          <p className="text-[#6d9dbe] text-lg max-w-2xl mx-auto">
+          <p className="text-[#FCFDFC] text-lg max-w-2xl mx-auto opacity-80">
             Institutional-grade tools that work together seamlessly
           </p>
         </div>
@@ -145,7 +145,7 @@ const Dashboard = () => {
                   
                   {/* Glass Button BELOW Image */}
                   <div className="p-6 flex items-center justify-center">
-                    <button className="group relative px-10 py-4 text-xl font-light tracking-wide text-white transition-all duration-300 hover:scale-105">
+                    <button className="group relative px-10 py-4 text-xl font-light tracking-wide text-[#FCFDFC] transition-all duration-300 hover:scale-105">
                       {/* Glass background */}
                       <div className="absolute inset-0 rounded-2xl bg-white/10 backdrop-blur-md border border-white/20 shadow-2xl transition-all duration-300 group-hover:bg-white/20 group-hover:border-white/30" />
                       
@@ -181,11 +181,11 @@ const Dashboard = () => {
                   <div className="text-4xl">{tool.icon}</div>
                   <div>
                     {tool.status === 'active' ? (
-                      <span className="px-2 py-1 bg-[#1a7a82] text-white text-xs rounded">
+                      <span className="px-2 py-1 bg-[#1a7a82] text-[#FCFDFC] text-xs rounded">
                         Active
                       </span>
                     ) : (
-                      <span className="px-2 py-1 bg-[#333333] text-[#6d9dbe] text-xs rounded">
+                      <span className="px-2 py-1 bg-[#333333] text-[#FCFDFC] text-xs rounded opacity-70">
                         Coming Soon
                       </span>
                     )}
@@ -193,17 +193,17 @@ const Dashboard = () => {
                 </div>
 
                 {/* Tool Info */}
-                <h3 className="text-xl font-bold text-white mb-2">
+                <h3 className="text-xl font-bold text-[#FCFDFC] mb-2">
                   {tool.name}
                 </h3>
-                <p className="text-[#ffffff] opacity-80 text-sm mb-4">
+                <p className="text-[#FCFDFC] opacity-80 text-sm mb-4">
                   {tool.description}
                 </p>
 
                 {/* Features List */}
                 <ul className="space-y-2">
                   {tool.features.map((feature, idx) => (
-                    <li key={idx} className="flex items-start text-sm text-[#6d9dbe]">
+                    <li key={idx} className="flex items-start text-sm text-[#FCFDFC] opacity-70">
                       <span className="mr-2">•</span>
                       <span>{feature}</span>
                     </li>
@@ -213,7 +213,7 @@ const Dashboard = () => {
                 {/* Action Button */}
                 {tool.status === 'active' && (
                   <div className="mt-6">
-                    <button className="w-full px-4 py-2 bg-[#1a7a82] text-white rounded hover:bg-[#1a7a82]/80 transition font-medium">
+                    <button className="w-full px-4 py-2 bg-[#1a7a82] text-[#FCFDFC] rounded hover:bg-[#1a7a82]/80 transition font-medium">
                       Open Tool →
                     </button>
                   </div>
@@ -234,14 +234,14 @@ const Dashboard = () => {
                 alt="Farther" 
                 className="h-6 w-auto opacity-60"
               />
-              <div className="text-[#6d9dbe] text-sm">
+              <div className="text-[#FCFDFC] text-sm opacity-60">
                 © 2026 Farther, Inc. All rights reserved.
               </div>
             </div>
             <div className="flex space-x-6 text-sm">
-              <a href="#" className="text-[#6d9dbe] hover:text-white transition">Documentation</a>
-              <a href="#" className="text-[#6d9dbe] hover:text-white transition">API</a>
-              <a href="#" className="text-[#6d9dbe] hover:text-white transition">Support</a>
+              <a href="#" className="text-[#FCFDFC] opacity-60 hover:opacity-100 transition">Documentation</a>
+              <a href="#" className="text-[#FCFDFC] opacity-60 hover:opacity-100 transition">API</a>
+              <a href="#" className="text-[#FCFDFC] opacity-60 hover:opacity-100 transition">Support</a>
             </div>
           </div>
         </div>
