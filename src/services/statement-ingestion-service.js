@@ -12,11 +12,13 @@
 
 import { query, withTransaction } from '../db/pool.js';
 import { DocumentClassifier } from '../parsers/document-classifier.js';
+import { PatternLearningService } from './pattern-learning-service.js';
 import crypto from 'crypto';
 
 export class StatementIngestionService {
   constructor() {
     this.classifier = new DocumentClassifier();
+    this.patternLearning = new PatternLearningService();
   }
 
   /**
@@ -28,8 +30,39 @@ export class StatementIngestionService {
   async ingestStatement(householdId, file) {
     console.log(`[Ingestion] Processing ${file.filename} for household ${householdId}`);
     
-    // Step 1: Classify and parse
-    const parsed = await this.classifier.parse(file);
+    const fileHash = this.hashFile(file.buffer);
+    let parsed;
+    let usedPattern = null;
+    let patternId = null;
+    
+    // Step 1: Try pattern-based classification (fast path)
+    const patternMatch = await this.patternLearning.matchPattern(file);
+    
+    if (patternMatch && patternMatch.confidence > 0.75) {
+      console.log(`[Ingestion] Using learned pattern for ${patternMatch.custodian} (confidence: ${patternMatch.confidence.toFixed(2)})`);
+      usedPattern = patternMatch;
+      patternId = patternMatch.patternId;
+      
+      // Parse with matched parser
+      try {
+        const parser = this.classifier.parsers.find(p => p.constructor.name === patternMatch.parser);
+        if (parser) {
+          parsed = await parser.parse(file);
+        } else {
+          console.warn('[Ingestion] Pattern matched but parser not found - falling back to full classification');
+          parsed = await this.classifier.parse(file);
+        }
+      } catch (err) {
+        console.error('[Ingestion] Pattern-based parse failed:', err.message);
+        // Record failure and fall back
+        await this.patternLearning.recordFailedParse(file, patternId);
+        parsed = await this.classifier.parse(file);
+      }
+    } else {
+      // Step 2: Fall back to full classification
+      console.log('[Ingestion] No pattern match - using full classification');
+      parsed = await this.classifier.parse(file);
+    }
     
     console.log(`[Ingestion] Parsed ${parsed.custodian}: ${parsed.accounts.length} accounts, ${parsed.positions.length} positions`);
     
@@ -76,11 +109,64 @@ export class StatementIngestionService {
       return { accounts: insertedAccounts, positions: insertedPositions };
     });
     
-    // Step 3: Return summary
+    // Determine parser name
+    const parserName = usedPattern ? usedPattern.parser : (parsed.classification?.parser || parsed.metadata?.parser || 'UnknownParser');
+    const confidence = usedPattern ? usedPattern.confidence : (parsed.classification?.confidence || 0.5);
+    
+    // Step 3: Learn from successful parse
+    try {
+      await this.patternLearning.recordSuccessfulParse(
+        file,
+        parsed.custodian,
+        parserName,
+        parsed
+      );
+    } catch (err) {
+      console.error('[Ingestion] Failed to record pattern learning:', err.message);
+    }
+    
+    // Step 4: Record uploaded statement for audit trail
+    try {
+      await query(
+        `INSERT INTO uploaded_statements (
+          household_id, filename, file_size_bytes, mime_type, file_hash,
+          detected_custodian, detected_parser, classification_confidence,
+          pattern_id, parse_status, accounts_imported, positions_imported, total_value
+        ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)`,
+        [
+          householdId,
+          file.filename,
+          file.buffer.length,
+          file.mimeType,
+          fileHash,
+          parsed.custodian,
+          parserName,
+          confidence,
+          patternId,
+          'success',
+          result.accounts.length,
+          result.positions.length,
+          result.accounts.reduce((sum, a) => sum + a.currentValue, 0),
+        ]
+      );
+    } catch (err) {
+      console.error('[Ingestion] Failed to record uploaded statement:', err.message);
+    }
+    
+    // Step 5: Return summary
     return {
       success: true,
       custodian: parsed.custodian,
-      classification: parsed.classification,
+      classification: {
+        custodian: parsed.custodian,
+        parser: parserName,
+        confidence: confidence,
+      },
+      usedPattern: usedPattern ? {
+        custodian: usedPattern.custodian,
+        confidence: usedPattern.confidence,
+        matchScore: usedPattern.matchScore,
+      } : null,
       accounts: result.accounts,
       positions: result.positions,
       summary: {
@@ -89,6 +175,14 @@ export class StatementIngestionService {
         totalValue: result.accounts.reduce((sum, a) => sum + a.currentValue, 0),
       },
     };
+  }
+  
+  /**
+   * Hash file for deduplication.
+   * @private
+   */
+  hashFile(buffer) {
+    return crypto.createHash('sha256').update(buffer).digest('hex');
   }
 
   /**

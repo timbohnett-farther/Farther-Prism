@@ -79,6 +79,24 @@ router.get('/custodians', (req, res) => {
 });
 
 /**
+ * Get pattern learning statistics.
+ */
+router.get('/patterns/stats', async (req, res) => {
+  try {
+    const stats = await ingestionService.patternLearning.getPatternStats();
+    res.json({
+      patterns: stats,
+      totalPatterns: stats.reduce((sum, s) => sum + parseInt(s.pattern_count), 0),
+      totalMatches: stats.reduce((sum, s) => sum + parseInt(s.total_matches), 0),
+      totalSuccesses: stats.reduce((sum, s) => sum + parseInt(s.total_successes), 0),
+    });
+  } catch (error) {
+    console.error('[Pattern Stats Error]', error.message);
+    res.status(500).json({ error: 'Failed to retrieve pattern statistics' });
+  }
+});
+
+/**
  * Reconcile imported positions with existing data.
  */
 router.post('/reconcile', async (req, res) => {
