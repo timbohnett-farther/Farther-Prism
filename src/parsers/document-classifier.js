@@ -6,19 +6,23 @@
  */
 
 import { SchwabParser } from './custodians/schwab-parser.js';
-// TODO: Import other parsers as they're built
-// import { FidelityParser } from './custodians/fidelity-parser.js';
-// import { VanguardParser } from './custodians/vanguard-parser.js';
+import { FidelityParser } from './custodians/fidelity-parser.js';
+import { VanguardParser } from './custodians/vanguard-parser.js';
+import { TDAParser } from './custodians/tda-parser.js';
+// TODO: Import other parsers as needed
+// import { ETradeParser } from './custodians/etrade-parser.js';
+// import { InteractiveBrokersParser } from './custodians/ib-parser.js';
 
 export class DocumentClassifier {
   constructor() {
     // Register all available parsers
     this.parsers = [
       new SchwabParser(),
-      // new FidelityParser(),
-      // new VanguardParser(),
-      // new TDAParser(),
+      new FidelityParser(),
+      new VanguardParser(),
+      new TDAParser(),
       // new ETradeParser(),
+      // new InteractiveBrokersParser(),
     ];
   }
 
