@@ -117,31 +117,9 @@
 
 ---
 
-#### 6. **Beyond** - Alternative Investments
+#### 6. **Presenter** - Client Presentation Maker ⭐ NEW
 **Status:** 📋 Planned (Phase 6)  
-**Tagline:** "Explore opportunities beyond the mainstream. Go Farther."  
-**Icon:** 🚀
-
-**Planned Features:**
-- Alternative investment due diligence
-- 10-category scoring framework (Dr. Victoria Chen persona)
-- 260-day auto-rescore threshold
-- Opportunity assessment
-- Risk/return modeling
-- Document repository
-
-**Tech:**
-- Scoring engine (10 dimensions)
-- Document parsing (PDF extraction)
-- Time-series tracking
-- Alert system (rescore needed)
-
-**ETA:** 6-8 weeks
-
----
-
-#### 7. **Presenter** - Client Presentation Maker ⭐ NEW
-**Status:** 📋 Roadmap (Phase 6+)  
+**Priority:** ⭐ BEFORE Beyond  
 **Tagline:** TBD  
 **Icon:** 🎤 or 📊
 
@@ -199,7 +177,31 @@
 3. **Naming:** "Presenter" vs "Showcase" vs "Keynote" vs custom name?
 4. **Priority:** Before or after Beyond?
 
-**ETA:** TBD (6-10 weeks depending on scope)
+**ETA:** 6-8 weeks
+
+---
+
+#### 7. **Beyond** - Alternative Investments
+**Status:** 📋 Planned (Phase 7)  
+**Priority:** After Presenter  
+**Tagline:** "Explore opportunities beyond the mainstream. Go Farther."  
+**Icon:** 🚀
+
+**Planned Features:**
+- Alternative investment due diligence
+- 10-category scoring framework (Dr. Victoria Chen persona)
+- 260-day auto-rescore threshold
+- Opportunity assessment
+- Risk/return modeling
+- Document repository
+
+**Tech:**
+- Scoring engine (10 dimensions)
+- Document parsing (PDF extraction)
+- Time-series tracking
+- Alert system (rescore needed)
+
+**ETA:** 8-10 weeks
 
 ---
 
@@ -229,14 +231,19 @@
 - Interactive charts (D3/Plotly)
 - What-if scenarios
 
-### Phase 6: Alternatives & Presentations 📋 (Weeks 8-10)
-- **Beyond module:** Alternative investment due diligence
-- **Presenter module:** Client presentation maker ⭐
+### Phase 6: Presentations & Polish 📋 (Weeks 8-9)
+- **Presenter module:** Client presentation maker ⭐ (PRIORITY)
 - Mobile responsive design
 - Performance optimization
+- UI polish across all modules
+
+### Phase 7: Alternatives & Launch Prep 📋 (Weeks 10-11)
+- **Beyond module:** Alternative investment due diligence
+- Final testing
+- Advisor training materials
 - Launch preparation
 
-### Phase 7: Launch & Scale 🚀 (Week 11+)
+### Phase 8: Launch & Scale 🚀 (Week 12+)
 - Advisor training materials
 - Documentation finalization
 - Beta testing with advisors
