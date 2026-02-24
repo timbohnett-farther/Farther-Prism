@@ -8,4 +8,4 @@ cmds = ['npm install', 'cd client && npm install']
 cmds = ['cd client && npm run build']
 
 [start]
-cmd = 'node api/server.js'
+cmd = 'node src/server.js'
