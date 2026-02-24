@@ -247,11 +247,6 @@ export default function RiskQuestionnaire({ onComplete, onCancel }: Props) {
                   </div>
                   <div className="ml-3">
                     <p className="text-white font-medium">{option.text}</p>
-                    {option.score !== undefined && (
-                      <p className="text-[#6d9dbe] text-sm mt-1">
-                        Risk score: {option.score}/15
-                      </p>
-                    )}
                   </div>
                 </div>
               </button>
