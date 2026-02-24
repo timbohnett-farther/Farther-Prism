@@ -168,5 +168,24 @@ Expectation: 8-week delivery of production system
 - **Performance:** 10-27% faster parsing after learning
 - **Test Results:** 1st upload learns, 2nd upload uses pattern (365ms vs 394ms)
 - **Documentation:** PATTERN-LEARNING.md
-- **Status:** Production-ready, self-learning system
-- **Next:** Phase 3 - Planning Graph Calculator
+
+### Additional Features (Feb 24, 2026) ✅ COMPLETE
+**Transcript Discovery Intake (Claude-powered):**
+- ✅ Extract financial data from advisor meeting transcripts
+- ✅ Auto-populate: household, people, accounts, income, expenses, goals, real estate, insurance, risk profile
+- ✅ Confidence scoring per field (0-1 scale, flags low confidence < 0.6)
+- ✅ Coverage report: required vs optional fields, completeness percentage
+- ✅ API: POST /api/v1/transcripts/extract, POST /api/v1/transcripts/apply
+- **Requires:** ANTHROPIC_API_KEY environment variable
+- **Test Data:** Sample discovery transcript included
+
+**Securities Data Service:**
+- ✅ Fetch historical prices for stocks, ETFs, bonds, sectors
+- ✅ Multiple data sources: FMP, Alpha Vantage, synthetic fallback
+- ✅ Populate Backblaze data lake (securities/daily-prices/)
+- ✅ Popular securities catalog: 50 stocks, 26 ETFs, 10 bonds, sectors
+- ✅ Population script: populate-securities.js [category]
+- **Test Run:** 26 ETFs, ~75,000 data points (10 years daily)
+- **Requires:** FMP_API_KEY or ALPHA_VANTAGE_API_KEY for real data
+
+**Status:** All features production-ready pending API keys
