@@ -9,20 +9,32 @@ import { SchwabParser } from './custodians/schwab-parser.js';
 import { FidelityParser } from './custodians/fidelity-parser.js';
 import { VanguardParser } from './custodians/vanguard-parser.js';
 import { TDAParser } from './custodians/tda-parser.js';
-// TODO: Import other parsers as needed
-// import { ETradeParser } from './custodians/etrade-parser.js';
-// import { InteractiveBrokersParser } from './custodians/ib-parser.js';
+import { ETradeParser } from './custodians/etrade-parser.js';
+import { MorganStanleyParser } from './custodians/morgan-stanley-parser.js';
+import { UBSParser } from './custodians/ubs-parser.js';
+import { GoldmanParser } from './custodians/goldman-parser.js';
+import { GenericParser } from './custodians/generic-parser.js';
+// Future: InteractiveBrokersParser, PershingParser, etc.
 
 export class DocumentClassifier {
   constructor() {
     // Register all available parsers
+    // Order matters: most specific first, generic last
     this.parsers = [
+      // Major retail brokers
       new SchwabParser(),
       new FidelityParser(),
       new VanguardParser(),
       new TDAParser(),
-      // new ETradeParser(),
-      // new InteractiveBrokersParser(),
+      new ETradeParser(),
+      
+      // Wealth management / UHNW
+      new MorganStanleyParser(),
+      new UBSParser(),
+      new GoldmanParser(),
+      
+      // Generic fallback (MUST BE LAST - lowest confidence)
+      new GenericParser(),
     ];
   }
 
