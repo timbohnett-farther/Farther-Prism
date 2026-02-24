@@ -112,13 +112,18 @@ const Dashboard = () => {
 
       {/* Main Content */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        {/* Section Header - Logo */}
-        <div className="mb-12 flex justify-center">
-          <img 
-            src="/farther-logo-main.png" 
-            alt="Farther" 
-            className="h-24 w-auto"
-          />
+        {/* Section Header - Logo & Tagline */}
+        <div className="mb-12 text-center">
+          <div className="flex justify-center mb-6">
+            <img 
+              src="/farther-logo-main.png" 
+              alt="Farther" 
+              className="h-24 w-auto"
+            />
+          </div>
+          <p className="text-[#FCFDFC] text-lg max-w-3xl mx-auto opacity-90 leading-relaxed">
+            An Intelligent Wealth Platform that unifies planning, portfolios, risk, proposals, reporting, and alternatives - so you can see clearly and go
+          </p>
         </div>
 
         {/* Tools Grid */}
