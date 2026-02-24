@@ -8,9 +8,9 @@
  */
 
 import { useState } from 'react';
-import RiskQuestionnaire from './RiskQuestionnaire.tsx';
-import RiskResults from './RiskResults.tsx';
-import { calculateAssessment } from '../services/riskScoringService.ts';
+import RiskQuestionnaire from './RiskQuestionnaire';
+import RiskResults from './RiskResults';
+import { calculateAssessment } from '../services/riskScoringService';
 
 export default function RiskAssessment() {
   const [view, setView] = useState('welcome'); // welcome | questionnaire | results
