@@ -17,6 +17,7 @@ import Dashboard from './components/Dashboard';
 import PlanningWizard from './components/PlanningWizard';
 import RiskAssessment from './components/RiskAssessment';
 import ProposifyBuilder from './components/ProposifyBuilder';
+import FocusDashboard from './components/FocusDashboard';
 import ErrorBoundary from './components/ErrorBoundary';
 
 // Future tools (placeholders)
@@ -55,8 +56,8 @@ function App() {
         {/* Proposify */}
         <Route path="/proposify" element={<ProposifyBuilder />} />
 
-        {/* Coming Soon Tools */}
-        <Route path="/portfolio" element={<ComingSoon toolName="Focus" />} />
+        {/* Focus - Portfolio Analytics */}
+        <Route path="/portfolio" element={<FocusDashboard />} />
         <Route path="/reports" element={<ComingSoon toolName="Narrative" />} />
         <Route path="/alternatives" element={<ComingSoon toolName="Beyond" />} />
 

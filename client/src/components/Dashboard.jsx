@@ -31,14 +31,14 @@ const Dashboard = () => {
       id: 'focus',
       name: 'Focus',
       tagline: 'Focus on what matters most. Go Farther.',
-      description: 'Performance attribution, rebalancing, and tax-loss harvesting',
+      description: 'Portfolio analytics, tax-loss harvesting, and rebalancing',
       icon: '🎯',
       route: '/portfolio',
-      status: 'coming_soon',
+      status: 'active',
       features: [
         'Performance attribution',
-        'Asset allocation analysis',
-        'Tax-loss harvesting opportunities',
+        'Tax-loss harvesting scanner',
+        'Allocation drift & rebalancing',
       ],
     },
     {
