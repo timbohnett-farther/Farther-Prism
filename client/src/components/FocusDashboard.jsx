@@ -6,7 +6,7 @@
 
 import { useState, useEffect } from 'react';
 import { PieChart, Pie, Cell, ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip } from 'recharts';
-import { Target, TrendingUp, TrendingDown, DollarSign, AlertTriangle, Loader2, ArrowLeft, Scissors, RefreshCw, Receipt } from 'lucide-react';
+import { Target, TrendingUp, TrendingDown, DollarSign, AlertTriangle, Loader2, ArrowLeft, Scissors, RefreshCw, Receipt, Upload, CheckCircle, FileText } from 'lucide-react';
 import axios from 'axios';
 
 const API_URL = 'https://farther-prism-production.up.railway.app';
@@ -24,7 +24,7 @@ const ASSET_CLASS_LABELS = {
 };
 
 export default function FocusDashboard() {
-  const [activeTab, setActiveTab] = useState('overview');
+  const [activeTab, setActiveTab] = useState('upload');
   const [householdId, setHouseholdId] = useState('');
   const [loading, setLoading] = useState(false);
   const [overview, setOverview] = useState(null);
@@ -33,6 +33,8 @@ export default function FocusDashboard() {
   const [rebalance, setRebalance] = useState(null);
   const [fees, setFees] = useState(null);
   const [performance, setPerformance] = useState(null);
+  const [uploading, setUploading] = useState(false);
+  const [uploadResult, setUploadResult] = useState(null);
 
   const loadData = async (tab) => {
     if (!householdId) return;
@@ -79,10 +81,47 @@ export default function FocusDashboard() {
   };
 
   useEffect(() => {
-    if (householdId) loadData(activeTab);
+    if (householdId && activeTab !== 'upload') loadData(activeTab);
   }, [activeTab, householdId]);
 
+  const handleFileUpload = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    setUploading(true);
+    setUploadResult(null);
+
+    const formData = new FormData();
+    formData.append('statement', file);
+    formData.append('householdId', householdId);
+
+    try {
+      const response = await axios.post(`${API_URL}/api/v1/statements/upload`, formData, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+      });
+
+      setUploadResult({
+        success: true,
+        data: response.data,
+      });
+
+      // Refresh overview data after successful upload
+      if (activeTab === 'upload') {
+        setTimeout(() => loadData('overview'), 1000);
+      }
+    } catch (error) {
+      console.error('Upload failed:', error);
+      setUploadResult({
+        success: false,
+        error: error.response?.data?.error || error.message || 'Upload failed',
+      });
+    } finally {
+      setUploading(false);
+    }
+  };
+
   const tabs = [
+    { id: 'upload', label: 'Upload Statements', icon: Upload },
     { id: 'overview', label: 'Overview', icon: Target },
     { id: 'performance', label: 'Performance', icon: TrendingUp },
     { id: 'allocation', label: 'Allocation', icon: PieChart },
@@ -172,6 +211,100 @@ export default function FocusDashboard() {
           </div>
         ) : (
           <>
+            {/* Upload Tab */}
+            {activeTab === 'upload' && (
+              <div>
+                <div className="max-w-2xl mx-auto">
+                  <div className="bg-[#5b6a71] rounded-lg p-8 text-center">
+                    <FileText className="w-16 h-16 text-[#1a7a82] mx-auto mb-4" />
+                    <h2 className="text-2xl font-bold text-[#FCFDFC] mb-2">Upload Account Statements</h2>
+                    <p className="text-[#FCFDFC] opacity-80 mb-6">
+                      Upload statements from any major custodian (Schwab, Fidelity, Vanguard, TD Ameritrade, etc.)
+                    </p>
+
+                    <div className="bg-[#333333] rounded-lg p-6 mb-6">
+                      <h3 className="text-lg font-bold text-[#FCFDFC] mb-3">Supported Formats</h3>
+                      <div className="grid grid-cols-2 gap-3 text-sm text-[#FCFDFC] opacity-80">
+                        <div>✓ CSV files</div>
+                        <div>✓ Schwab statements</div>
+                        <div>✓ Fidelity statements</div>
+                        <div>✓ Vanguard statements</div>
+                        <div>✓ TD Ameritrade</div>
+                        <div>✓ E*TRADE</div>
+                        <div>✓ Morgan Stanley</div>
+                        <div>✓ UBS / Goldman Sachs</div>
+                      </div>
+                    </div>
+
+                    <label className="cursor-pointer">
+                      <input
+                        type="file"
+                        accept=".csv,.txt"
+                        onChange={handleFileUpload}
+                        disabled={uploading}
+                        className="hidden"
+                      />
+                      <div className={`px-8 py-4 rounded-lg font-bold text-lg transition ${
+                        uploading
+                          ? 'bg-[#1a7a82]/50 cursor-not-allowed'
+                          : 'bg-[#1a7a82] hover:bg-[#1a7a82]/80 cursor-pointer'
+                      } text-[#FCFDFC] inline-flex items-center gap-2`}>
+                        {uploading ? (
+                          <>
+                            <Loader2 className="w-5 h-5 animate-spin" />
+                            Uploading...
+                          </>
+                        ) : (
+                          <>
+                            <Upload className="w-5 h-5" />
+                            Choose File to Upload
+                          </>
+                        )}
+                      </div>
+                    </label>
+
+                    {uploadResult && (
+                      <div className={`mt-6 p-4 rounded-lg ${
+                        uploadResult.success
+                          ? 'bg-green-900/30 border-2 border-green-400'
+                          : 'bg-red-900/30 border-2 border-red-400'
+                      }`}>
+                        {uploadResult.success ? (
+                          <>
+                            <div className="flex items-center justify-center gap-2 text-green-400 font-bold mb-2">
+                              <CheckCircle className="w-5 h-5" />
+                              Upload Successful!
+                            </div>
+                            <div className="text-[#FCFDFC] text-sm">
+                              <p className="mb-1">Accounts imported: {uploadResult.data.accountsImported || 0}</p>
+                              <p className="mb-1">Positions imported: {uploadResult.data.positionsImported || 0}</p>
+                              {uploadResult.data.custodian && (
+                                <p className="opacity-60">Custodian: {uploadResult.data.custodian}</p>
+                              )}
+                            </div>
+                            <button
+                              onClick={() => setActiveTab('overview')}
+                              className="mt-4 px-4 py-2 bg-[#1a7a82] text-[#FCFDFC] rounded-lg text-sm"
+                            >
+                              View Portfolio →
+                            </button>
+                          </>
+                        ) : (
+                          <>
+                            <div className="flex items-center justify-center gap-2 text-red-400 font-bold mb-2">
+                              <AlertTriangle className="w-5 h-5" />
+                              Upload Failed
+                            </div>
+                            <p className="text-[#FCFDFC] text-sm">{uploadResult.error}</p>
+                          </>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+            )}
+
             {/* Overview Tab */}
             {activeTab === 'overview' && overview && (
               <div>
