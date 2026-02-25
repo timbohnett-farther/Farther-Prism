@@ -70,6 +70,20 @@ const Dashboard = () => {
       ],
     },
     {
+      id: 'presenter',
+      name: 'Presenter',
+      tagline: 'Present with confidence. Go Farther.',
+      description: 'Slide-based presentations auto-populated with client data',
+      icon: '🎬',
+      route: '/presenter',
+      status: 'active',
+      features: [
+        'Auto-generated slide decks',
+        'Portfolio data integration',
+        'Fullscreen presentation mode',
+      ],
+    },
+    {
       id: 'beyond',
       name: 'Beyond',
       tagline: 'Explore opportunities beyond the mainstream. Go Farther.',
