@@ -16,6 +16,7 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import Dashboard from './components/Dashboard';
 import PlanningWizard from './components/PlanningWizard';
 import RiskAssessment from './components/RiskAssessment';
+import ErrorBoundary from './components/ErrorBoundary';
 
 // Future tools (placeholders)
 const ComingSoon = ({ toolName }) => (
@@ -38,7 +39,8 @@ function App() {
   console.log('[App] Initializing router');
   
   return (
-    <Router>
+    <ErrorBoundary>
+      <Router>
       <Routes>
         {/* Landing Page - Dashboard */}
         <Route path="/" element={<Dashboard />} />
@@ -59,6 +61,7 @@ function App() {
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </Router>
+    </ErrorBoundary>
   );
 }
 
