@@ -20,6 +20,7 @@ import ProposifyBuilder from './components/ProposifyBuilder';
 import FocusDashboard from './components/FocusDashboard';
 import NarrativeReports from './components/NarrativeReports';
 import PresenterView from './components/PresenterView';
+import BeyondMarketplace from './components/BeyondMarketplace';
 import ErrorBoundary from './components/ErrorBoundary';
 
 // Future tools (placeholders)
@@ -64,7 +65,8 @@ function App() {
         {/* Presenter */}
         <Route path="/presenter" element={<PresenterView />} />
 
-        <Route path="/alternatives" element={<ComingSoon toolName="Beyond" />} />
+        {/* Beyond - Alternative Investments */}
+        <Route path="/alternatives" element={<BeyondMarketplace />} />
 
         {/* 404 Redirect */}
         <Route path="*" element={<Navigate to="/" replace />} />
