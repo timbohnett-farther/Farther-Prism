@@ -163,12 +163,12 @@ const Dashboard = () => {
                   onClick={() => handleToolClick(tool)}
                   className="rounded-lg overflow-hidden cursor-pointer transition-all duration-200 hover:scale-105 hover:shadow-2xl bg-[#5b6a71]"
                 >
-                  {/* Hero Image - Full size, no cropping */}
-                  <div className="w-full">
+                  {/* Hero Image - Fixed height with uniform cropping */}
+                  <div className="w-full h-64">
                     <img 
                       src={config.src}
                       alt={config.alt}
-                      className="w-full h-auto object-contain"
+                      className="w-full h-full object-cover"
                       style={{ display: 'block' }}
                     />
                   </div>
