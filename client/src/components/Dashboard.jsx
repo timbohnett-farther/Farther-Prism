@@ -23,15 +23,9 @@ const Dashboard = () => {
       id: 'compass',
       name: 'Compass',
       tagline: 'Navigate risk with clarity. Go Farther.',
-      description: 'AI-powered adaptive questionnaire with dual-dimension scoring',
-      icon: '🧭',
+      type: 'image-card', // Image card like Prism
       route: '/risk',
       status: 'active',
-      features: [
-        'Behavioral risk tolerance',
-        'Financial risk capacity',
-        'Behavioral Investor Type',
-      ],
     },
     {
       id: 'focus',
@@ -140,19 +134,26 @@ const Dashboard = () => {
         {/* Tools Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {tools.map((tool) => {
-            // Special card: Prism image with glass button BELOW
+            // Special card: Image card with glass button BELOW (Prism, Compass, etc.)
             if (tool.type === 'image-card') {
+              // Dynamic image and button text based on tool
+              const imageConfig = {
+                prism: { src: '/prism-hero.jpg', alt: 'Prism Planning Tool', buttonText: 'Begin Planning' },
+                compass: { src: '/compass-hero.jpg', alt: 'Compass Risk Assessment', buttonText: 'Assess Risk' },
+              };
+              const config = imageConfig[tool.id] || imageConfig.prism;
+              
               return (
                 <div
                   key={tool.id}
                   onClick={() => handleToolClick(tool)}
                   className="rounded-lg overflow-hidden cursor-pointer transition-all duration-200 hover:scale-105 hover:shadow-2xl bg-[#5b6a71]"
                 >
-                  {/* Prism Image - Full size, no cropping */}
+                  {/* Hero Image - Full size, no cropping */}
                   <div className="w-full">
                     <img 
-                      src="/prism-hero.jpg" 
-                      alt="Prism Planning Tool"
+                      src={config.src}
+                      alt={config.alt}
                       className="w-full h-auto object-contain"
                       style={{ display: 'block' }}
                     />
@@ -177,7 +178,7 @@ const Dashboard = () => {
                         </div>
                         
                         {/* Button text */}
-                        <span className="relative z-10">Begin Planning</span>
+                        <span className="relative z-10">{config.buttonText}</span>
                       </button>
                     </div>
                   </div>
