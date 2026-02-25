@@ -6,6 +6,9 @@
  */
 
 import pool from '../db/pool.js';
+import { PDFGenerator } from './pdf-generator.js';
+
+const pdfGenerator = new PDFGenerator();
 
 export class ProposifyService {
   /**
@@ -316,6 +319,36 @@ export class ProposifyService {
     }
 
     return result.rows[0];
+  }
+
+  /**
+   * Generate PDF for proposal.
+   */
+  async generatePDF(proposalId) {
+    const proposal = await this.getProposal(proposalId);
+    const template = await this.getTemplate(proposal.template_id);
+
+    console.log(`[Proposify] Generating PDF for proposal ${proposalId}...`);
+
+    // Generate PDF
+    const pdfBuffer = await pdfGenerator.generateProposal(proposal, template);
+
+    // Upload to Backblaze
+    const pdfUrl = await pdfGenerator.uploadPDF(proposalId, pdfBuffer);
+
+    // Update proposal with PDF URL
+    await pool.query(`
+      UPDATE proposals
+      SET pdf_url = $1, pdf_generated_at = NOW()
+      WHERE id = $2
+    `, [pdfUrl, proposalId]);
+
+    console.log(`[Proposify] PDF generated and uploaded: ${pdfUrl}`);
+
+    return {
+      pdfUrl,
+      size: pdfBuffer.length,
+    };
   }
 }
 

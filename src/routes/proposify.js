@@ -152,6 +152,25 @@ router.post('/:id/sign', async (req, res) => {
 });
 
 /**
+ * Generate PDF for proposal.
+ */
+router.post('/:id/pdf', async (req, res) => {
+  try {
+    const result = await proposifyService.generatePDF(req.params.id);
+
+    res.json({
+      success: true,
+      pdfUrl: result.pdfUrl,
+      size: result.size,
+    });
+
+  } catch (error) {
+    console.error('[Proposify API Error]', error.message);
+    res.status(500).json({ error: 'PDF generation failed', message: error.message });
+  }
+});
+
+/**
  * Get proposal tracking events.
  */
 router.get('/:id/events', async (req, res) => {
