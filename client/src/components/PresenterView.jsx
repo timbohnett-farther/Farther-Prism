@@ -16,6 +16,7 @@ const PRES_TYPES = [
   { id: 'review', label: 'Quarterly Review', description: 'Portfolio performance review for client meetings' },
   { id: 'onboarding', label: 'New Client Onboarding', description: 'Welcome presentation for new relationships' },
   { id: 'planning', label: 'Planning Review', description: 'Annual planning review with goals progress' },
+  { id: 'custom', label: 'Custom from Outline', description: 'Create slides from your text outline' },
 ];
 
 export default function PresenterView() {
@@ -25,9 +26,62 @@ export default function PresenterView() {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [fullscreen, setFullscreen] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [step, setStep] = useState('home'); // home, list, view
+  const [step, setStep] = useState('home'); // home, list, view, outline
+  const [outlineText, setOutlineText] = useState('');
+  const [selectedType, setSelectedType] = useState(null);
 
   const fmt = (n) => (n || 0).toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+
+  const parseOutline = (text) => {
+    const slides = [];
+    const lines = text.split('\n').filter(line => line.trim());
+    let currentSlide = null;
+
+    for (const line of lines) {
+      const trimmed = line.trim();
+
+      // Title slide (# Title)
+      if (trimmed.startsWith('# ')) {
+        if (currentSlide) slides.push(currentSlide);
+        currentSlide = {
+          type: 'title',
+          title: trimmed.substring(2).trim(),
+          subtitle: '',
+        };
+      }
+      // Section heading (## Heading)
+      else if (trimmed.startsWith('## ')) {
+        if (currentSlide) slides.push(currentSlide);
+        currentSlide = {
+          type: 'content',
+          title: trimmed.substring(3).trim(),
+          bullets: [],
+        };
+      }
+      // Bullet point (- text or * text)
+      else if (trimmed.startsWith('- ') || trimmed.startsWith('* ')) {
+        if (!currentSlide) {
+          currentSlide = { type: 'content', title: 'Untitled', bullets: [] };
+        }
+        if (currentSlide.type === 'content') {
+          currentSlide.bullets.push(trimmed.substring(2).trim());
+        } else if (currentSlide.type === 'title') {
+          currentSlide.subtitle = trimmed.substring(2).trim();
+        }
+      }
+      // Subtitle for title slide (plain text after title)
+      else if (currentSlide && currentSlide.type === 'title' && !currentSlide.subtitle) {
+        currentSlide.subtitle = trimmed;
+      }
+      // Additional content
+      else if (currentSlide && currentSlide.type === 'content' && trimmed) {
+        currentSlide.bullets.push(trimmed);
+      }
+    }
+
+    if (currentSlide) slides.push(currentSlide);
+    return slides.length > 0 ? slides : [{ type: 'title', title: 'Presentation', subtitle: 'Go Farther' }];
+  };
 
   const loadPresentations = async () => {
     if (!householdId) return;
@@ -41,6 +95,14 @@ export default function PresenterView() {
   };
 
   const createPresentation = async (type) => {
+    // If custom type, go to outline input step
+    if (type.id === 'custom') {
+      setSelectedType(type);
+      setStep('outline');
+      return;
+    }
+
+    // Otherwise create from portfolio data
     setLoading(true);
     try {
       const res = await axios.post(`${API_URL}/api/v1/presenter`, {
@@ -57,6 +119,26 @@ export default function PresenterView() {
     } finally {
       setLoading(false);
     }
+  };
+
+  const createFromOutline = async () => {
+    if (!outlineText.trim()) {
+      alert('Please enter an outline');
+      return;
+    }
+
+    const slides = parseOutline(outlineText);
+    
+    // Create presentation object locally (no API call needed for custom)
+    setCurrentPres({
+      id: `custom-${Date.now()}`,
+      title: slides[0]?.title || 'Custom Presentation',
+      presentation_type: 'custom',
+      slides: slides,
+      created_at: new Date().toISOString(),
+    });
+    setCurrentSlide(0);
+    setStep('view');
   };
 
   const slides = currentPres?.slides || [];
@@ -85,7 +167,13 @@ export default function PresenterView() {
         <div className="max-w-2xl mx-auto text-center">
           <h1 className="text-4xl font-bold text-[#FCFDFC] mb-4">🎬 Presenter</h1>
           <p className="text-[#FCFDFC] opacity-80 mb-8">Present with confidence. Go Farther.</p>
-          <div className="bg-[#5b6a71] rounded-lg p-8">
+          
+          {/* Option 1: Portfolio-Based */}
+          <div className="bg-[#5b6a71] rounded-lg p-8 mb-4">
+            <h2 className="text-xl font-bold text-[#FCFDFC] mb-4">Create from Portfolio Data</h2>
+            <p className="text-[#FCFDFC] opacity-80 text-sm mb-4">
+              Auto-generate presentations with client portfolio metrics
+            </p>
             <label className="block text-[#FCFDFC] font-medium mb-2">Enter Household ID</label>
             <input
               type="text"
@@ -102,6 +190,21 @@ export default function PresenterView() {
               Open Presentations
             </button>
           </div>
+
+          {/* Option 2: Custom Outline */}
+          <div className="bg-[#5b6a71] rounded-lg p-8">
+            <h2 className="text-xl font-bold text-[#FCFDFC] mb-4">Create from Text Outline</h2>
+            <p className="text-[#FCFDFC] opacity-80 text-sm mb-4">
+              Paste your outline and generate slides instantly
+            </p>
+            <button
+              onClick={() => { setHouseholdId('custom'); setStep('outline'); }}
+              className="px-6 py-3 bg-[#1a7a82] text-[#FCFDFC] rounded-lg hover:bg-[#1a7a82]/80 font-bold"
+            >
+              Create Custom Presentation →
+            </button>
+          </div>
+
           <a href="/" className="inline-block mt-6 text-[#FCFDFC] opacity-60 hover:opacity-100">← Back to Dashboard</a>
         </div>
       </div>
@@ -119,7 +222,7 @@ export default function PresenterView() {
           </div>
 
           <h2 className="text-xl font-bold text-[#FCFDFC] mb-6">Create New Presentation</h2>
-          <div className="grid grid-cols-3 gap-4 mb-8">
+          <div className="grid grid-cols-4 gap-4 mb-8">
             {PRES_TYPES.map((type) => (
               <button
                 key={type.id}
@@ -160,6 +263,102 @@ export default function PresenterView() {
               ))}
             </>
           )}
+        </div>
+      </div>
+    );
+  }
+
+  // Outline input step
+  if (step === 'outline') {
+    return (
+      <div className="min-h-screen bg-[#333333] p-8">
+        <div className="max-w-4xl mx-auto">
+          <div className="flex items-center gap-4 mb-8">
+            <button onClick={() => setStep('list')} className="text-[#FCFDFC] opacity-60 hover:opacity-100">
+              <ArrowLeft className="w-5 h-5" />
+            </button>
+            <h1 className="text-3xl font-bold text-[#FCFDFC]">Create Custom Presentation</h1>
+          </div>
+
+          <div className="grid grid-cols-2 gap-6">
+            {/* Input */}
+            <div className="bg-[#5b6a71] rounded-lg p-6">
+              <h2 className="text-xl font-bold text-[#FCFDFC] mb-4">Paste Your Outline</h2>
+              <textarea
+                value={outlineText}
+                onChange={(e) => setOutlineText(e.target.value)}
+                placeholder={`# Opening Slide Title
+Your subtitle here
+
+## First Section
+- Key point one
+- Key point two
+- Key point three
+
+## Second Section
+- Another important point
+- Supporting detail
+- Call to action
+
+# Thank You
+Go Farther Together`}
+                className="w-full h-96 px-4 py-3 bg-[#333333] text-[#FCFDFC] rounded-lg border-2 border-[#1a7a82] font-mono text-sm resize-none focus:outline-none focus:border-[#1a7a82]/80"
+              />
+              <button
+                onClick={createFromOutline}
+                disabled={!outlineText.trim()}
+                className="w-full mt-4 px-6 py-3 bg-[#1a7a82] text-[#FCFDFC] rounded-lg hover:bg-[#1a7a82]/80 font-bold disabled:opacity-50"
+              >
+                Generate Slides
+              </button>
+            </div>
+
+            {/* Instructions */}
+            <div className="bg-[#5b6a71] rounded-lg p-6">
+              <h2 className="text-xl font-bold text-[#FCFDFC] mb-4">Format Guide</h2>
+              <div className="space-y-4 text-[#FCFDFC]">
+                <div>
+                  <p className="font-bold text-[#1a7a82] mb-1"># Title Slide</p>
+                  <p className="text-sm opacity-80">Creates a centered title slide</p>
+                  <code className="block mt-1 bg-[#333333] px-2 py-1 rounded text-xs">
+                    # Welcome to Farther<br/>
+                    Your subtitle here
+                  </code>
+                </div>
+
+                <div>
+                  <p className="font-bold text-[#1a7a82] mb-1">## Content Slide</p>
+                  <p className="text-sm opacity-80">Creates a slide with heading and bullets</p>
+                  <code className="block mt-1 bg-[#333333] px-2 py-1 rounded text-xs">
+                    ## Our Services<br/>
+                    - Planning<br/>
+                    - Portfolio Management<br/>
+                    - Tax Optimization
+                  </code>
+                </div>
+
+                <div>
+                  <p className="font-bold text-[#1a7a82] mb-1">- Bullet Points</p>
+                  <p className="text-sm opacity-80">Use - or * for bullet points</p>
+                  <code className="block mt-1 bg-[#333333] px-2 py-1 rounded text-xs">
+                    - First point<br/>
+                    - Second point<br/>
+                    * Also works with asterisks
+                  </code>
+                </div>
+
+                <div className="pt-4 border-t border-[#333333]">
+                  <p className="text-sm opacity-80">
+                    <strong>Tips:</strong><br/>
+                    • One blank line between slides<br/>
+                    • Keep bullets concise<br/>
+                    • 3-5 bullets per slide works best<br/>
+                    • Start and end with title slides
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     );
